@@ -1,0 +1,145 @@
+---
+id: io.github.toni500github.oshot
+runtime: org.gnome.Platform
+runtime-version: "51"
+sdk: org.gnome.Sdk
+command: oshot
+rename-desktop-file: oshot.desktop
+rename-icon: oshot
+finish-args:
+  # network only for downloading OCR languages through curl
+  - --share=network
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # for showing the tray icon
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --filesystem=xdg-pictures
+
+modules:
+  # ------------
+  # libs
+  # ------------
+  - shared-modules/intltool/intltool-0.51.json
+  - shared-modules/libayatana-appindicator/libayatana-appindicator-gtk3.json
+  - shared-modules/libappindicator/libappindicator-gtk3-12.10.json
+
+  - name: SDL3
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DSDL_SHARED=ON
+      - -DSDL_STATIC=OFF
+      - -DSDL_AUDIO=OFF
+      - -DSDL_CAMERA=OFF
+      - -DSDL_JOYSTICK=OFF
+      - -DSDL_HAPTIC=OFF
+      - -DSDL_HIDAPI=OFF
+      - -DSDL_SENSOR=OFF
+      - -DSDL_POWER=OFF
+      - -DSDL_GPU=OFF
+      - -DSDL_VULKAN=OFF
+      - -DSDL_KMSDRM=OFF
+      - -DSDL_WAYLAND_LIBDECOR=OFF
+      - -DSDL_LIBURING=OFF
+      - -DSDL_TEST_LIBRARY=OFF
+      - -DSDL_TESTS=OFF
+      - -DSDL_EXAMPLES=OFF
+    sources:
+      - type: git
+        url: https://github.com/libsdl-org/SDL.git
+        tag: release-3.4.20
+        commit: f00dc919ca35b9756316e86c4777392de442f9b2
+
+  - name: leptonica
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DBUILD_SHARED_LIBS=ON
+    sources:
+      - type: git
+        url: https://github.com/DanBloomberg/leptonica.git
+        tag: 1.87.0
+        commit: 13275a278eb55b5746e33f95fbf5a2c8f604b3ab
+
+  - name: tesseract
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DBUILD_TRAINING_TOOLS=OFF
+      - -DBUILD_SHARED_LIBS=ON
+    sources:
+      - type: git
+        url: https://github.com/tesseract-ocr/tesseract.git
+        tag: 5.5.4
+        commit: 7e548e6eff172f38f97664afe7f7ce40db36c8d6
+
+  - name: zbar
+    buildsystem: meson
+    config-opts:
+      - -Dlibrary_type=shared
+      - -Ddoc=false
+      - -Dvideo=false
+      - -Dxshm=disabled
+      - -Dxv=disabled
+      - -Ddbus=disabled
+      - -Dgraphicsmagick=disabled
+      - -Dimagemagick=disabled
+      - -Dgtk=no
+      - -Dgir=false
+      - -Dbuild_tests=false
+      - -Djava=disabled
+      - -Dpython=no
+      - -Dqt=false
+      - -Dnls=disabled
+      - -Dx11=disabled
+    sources:
+      - type: git
+        url: https://github.com/mchehab/zbar.git
+        tag: 0.23.95
+        commit: dc19fcc7da58e8cf84ba1ec417e24b04609feb23
+
+  # needed for xclip
+  - name: libXmu
+    config-opts:
+      - --disable-static
+      - --disable-docs
+    sources:
+      - type: git
+        url: https://gitlab.freedesktop.org/xorg/lib/libxmu.git
+        tag: libXmu-1.3.1
+        commit: cdf280f6611932f79ab872832974e8043b1cad6d
+
+  # ------------
+  # binaries
+  # ------------
+  - name: wl-clipboard
+    buildsystem: meson
+    config-opts:
+      - -Dzshcompletiondir=no
+      - -Dfishcompletiondir=no
+    sources:
+      - type: git
+        url: https://github.com/bugaevc/wl-clipboard.git
+        tag: v2.3.0
+        commit: 67a7b937895bceec1ae5ccebb10216f63f70ca1b
+
+  - name: xclip
+    sources:
+      - type: git
+        url: https://github.com/astrand/xclip.git
+        tag: 0.13
+        commit: 9aa7090c3b8b437c6489edca32ae43d82e0c1281
+
+  - name: oshot
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DDISABLE_PLUGINS=ON
+    sources:
+      - type: git
+        url: https://github.com/Toni500github/oshot.git
+        commit: 2ae627472d9dbafd49757f25e4a605a11711cab9
