@@ -17,6 +17,12 @@ finish-args:
   - --talk-name=org.kde.StatusNotifierWatcher
   - --filesystem=xdg-pictures
 
+cleanup:
+  - /include
+  - /lib/cmake
+  - "*.la"
+  - "*.a"
+
 modules:
   # ------------
   # libs
@@ -71,6 +77,8 @@ modules:
       - -DCMAKE_BUILD_TYPE=Release
       - -DBUILD_TRAINING_TOOLS=OFF
       - -DBUILD_SHARED_LIBS=ON
+    cleanup:
+      - /bin
     sources:
       - type: git
         url: https://github.com/tesseract-ocr/tesseract.git
